@@ -209,7 +209,7 @@ void gpsread(void){
         Todo += String(gps.location.lat(), 6);
         Todo += ",";
         Todo += String(gps.location.lng(), 6);
-        Todo += "\n";
+        Todo += ",";
         Serial.print(gps.location.lat(), 6);
         Serial.print(F(","));
         Serial.print(gps.location.lng(), 6);
@@ -220,7 +220,7 @@ void gpsread(void){
         Todo += "0";
         Todo += ",";
         Todo += "0";
-        Todo += "\n";
+        Todo += ",";
         Serial.print(F("INVALID"));
         gps_flag = 1;
       }
@@ -245,17 +245,28 @@ void gpsread(void){
         if (gps.time.hour() < 10) Serial.print(F("0"));
         Serial.print(gps.time.hour());
         Serial.print(F(":"));
+        if (gps.time.hour() < 10) Todo += "0";
+          Todo += gps.time.hour();
+          
       if (gps.time.minute() < 10) Serial.print(F("0"));
         Serial.print(gps.time.minute());
         Serial.print(F(":"));
+      if (gps.time.minute() < 10) Todo += "0";
+        Todo += gps.time.minute();
+        Todo += "\n";
+        
       if (gps.time.second() < 10) Serial.print(F("0"));
         Serial.print(gps.time.second());
         Serial.print(F("."));
+
+      
       if (gps.time.centisecond() < 10) Serial.print(F("0"));
         Serial.print(gps.time.centisecond());
       }
       else
       {
+        Todo +="0000";
+        Todo += "\n";
         Serial.print(F("INVALID"));
       }
 
@@ -505,26 +516,17 @@ void loop() {
         Todo += ",";
         Todo += gz;
         Todo += ",";
-     // Todo += "\n";  
 
         gpsread();
- 
   delay(10);
-
-  char todoch[Todo.length()];
-  Todo.toCharArray(todoch,Todo.length());
-  Serial.println(todoch);
   if(gps_flag == 1)
-  {
-    char todoch[Todo.length()+1];
-    Todo.toCharArray(todoch,Todo.length());
-    Serial.println(todoch);
-    rf95.send((uint8_t *)todoch,Todo.length());   
-  }
+    {
+      char todoch[Todo.length()+1];
+      Todo.toCharArray(todoch,Todo.length());
+      Serial.println(todoch);
+      rf95.send((uint8_t *)todoch,Todo.length());   
+    }
   Todo = "";
   delay(1000);  
-  gps_flag = 0;
- /*rf95.send((uint8_t *)"variable", "Largo de variable") //para enviar simplemente
-  */
-  
+  gps_flag = 0;  
 }
